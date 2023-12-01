@@ -7,6 +7,7 @@ plugins {
 repositories {
     mavenCentral()
     google()
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 android {
@@ -38,7 +39,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
-                // JVM-specific dependencies
+                implementation("software.momento.kotlin:client-protos-jvm:0.1.0-SNAPSHOT")
             }
         }
         val jvmTest by getting {
@@ -48,7 +49,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                // Android-specific dependencies
+                implementation("software.momento.kotlin:client-protos-android:0.1.0-SNAPSHOT")
             }
         }
         val androidUnitTest by getting {
