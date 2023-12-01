@@ -28,6 +28,9 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+                implementation("io.grpc:grpc-kotlin-stub:1.4.1") // Adjust version as needed
+                implementation("io.grpc:grpc-protobuf:1.59.1") // Adjust version as needed
+                implementation("io.grpc:grpc-stub:1.59.1") // Adjust version as needed
             }
         }
         val commonTest by getting {

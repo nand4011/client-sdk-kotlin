@@ -1,4 +1,23 @@
 package software.momento.kotlin.sdk.internal
 
-// todo: the code here will be a gRPC error code. To be added once gRPC deps are added
-public data class MomentoGrpcErrorDetails(val code: Int, val details: String, val metadata: Map<String, Any>?)
+import io.grpc.Status
+import io.grpc.Metadata
+
+/**
+ * Captures gRPC-level information about an error.
+ */
+public data class MomentoGrpcErrorDetails(
+    val statusCode: Status.Code,
+    val details: String,
+    val metadata: Metadata? = null
+) {
+    /**
+     * Returns the gRPC metadata if present.
+     */
+    public fun getMetadata(): Metadata? = metadata
+
+    /**
+     * Returns the cache name from the metadata if present.
+     */
+    public fun getCacheName(): String? = metadata?.get(Metadata.Key.of("cache", Metadata.ASCII_STRING_MARSHALLER))
+}
