@@ -7,15 +7,10 @@ import io.grpc.Metadata
  * Captures gRPC-level information about an error.
  */
 public data class MomentoGrpcErrorDetails(
-    val statusCode: Status.Code,
-    val details: String,
-    val metadata: Metadata? = null
+    public val statusCode: Status.Code,
+    public val details: String,
+    public val metadata: Metadata? = null
 ) {
-    /**
-     * Returns the gRPC metadata if present.
-     */
-    public fun getMetadata(): Metadata? = metadata
-
     /**
      * Returns the cache name from the metadata if present.
      */
