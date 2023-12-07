@@ -29,6 +29,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+                implementation("io.grpc:grpc-api:1.57.2")
             }
         }
         val commonTest by getting {
