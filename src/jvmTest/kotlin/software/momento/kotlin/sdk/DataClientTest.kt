@@ -7,6 +7,7 @@ import software.momento.kotlin.sdk.config.Configuration
 import software.momento.kotlin.sdk.responses.cache.GetResponse
 import software.momento.kotlin.sdk.responses.cache.SetResponse
 import kotlin.test.fail
+import kotlin.time.Duration.Companion.seconds
 
 class DataClientTest {
 
@@ -18,7 +19,7 @@ class DataClientTest {
             configuration = Configuration.Companion.Laptop.Latest
         )
 
-        val setResponse = dataClient.set("cache", "keyKotlin", "val", 60000)
+        val setResponse = dataClient.set("cache", "keyKotlin", "val", 60.seconds)
         if (setResponse is SetResponse.Error) {
             fail(setResponse.cause?.message)
         }

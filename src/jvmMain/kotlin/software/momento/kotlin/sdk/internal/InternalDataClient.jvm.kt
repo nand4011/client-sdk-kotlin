@@ -6,6 +6,7 @@ import grpc.cache_client._GetRequest
 import grpc.cache_client._GetResponse
 import grpc.cache_client._SetRequest
 import io.grpc.Metadata
+import software.momento.kotlin.sdk.utils.ValidationUtils
 import software.momento.kotlin.sdk.auth.CredentialProvider
 import software.momento.kotlin.sdk.config.Configuration
 import software.momento.kotlin.sdk.exceptions.CacheServiceExceptionMapper
@@ -13,7 +14,7 @@ import software.momento.kotlin.sdk.exceptions.InternalServerException
 import software.momento.kotlin.sdk.responses.cache.GetResponse
 import software.momento.kotlin.sdk.responses.cache.SetResponse
 import java.io.Closeable
-import java.lang.RuntimeException
+import kotlin.time.Duration
 
 internal actual class InternalDataClient actual constructor(
     credentialProvider: CredentialProvider,
@@ -26,14 +27,18 @@ internal actual class InternalDataClient actual constructor(
     }
 
     internal actual suspend fun set(
-        cacheName: String, key: String, value: String, ttlMilliSeconds: Long
+        cacheName: String, key: String, value: String, ttl: Duration
     ): SetResponse {
+
+        ValidationUtils.checkCacheNameValid(cacheName)
+        ValidationUtils.ensureValidCacheSet(key, value, ttl)
+
         val metadata = metadataWithCache(cacheName)
 
         val request = _SetRequest.newBuilder()
             .setCacheKey(convert(key.toByteArray()))
             .setCacheBody(convert(value.toByteArray()))
-            .setTtlMilliseconds(ttlMilliSeconds)
+            .setTtlMilliseconds(ttl.inWholeMilliseconds)
             .build()
 
         try {
@@ -47,6 +52,9 @@ internal actual class InternalDataClient actual constructor(
 
     internal actual suspend fun get(
         cacheName: String, key: String): GetResponse {
+
+        ValidationUtils.checkCacheNameValid(cacheName)
+
         val metadata = metadataWithCache(cacheName)
 
         val request = _GetRequest.newBuilder()

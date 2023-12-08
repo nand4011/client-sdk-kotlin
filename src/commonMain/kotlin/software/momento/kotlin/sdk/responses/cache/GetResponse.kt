@@ -17,9 +17,9 @@ public sealed interface GetResponse {
 
         // String representation of the Hit class
         override fun toString(): String {
-            val valueStringTruncated = valueString() // Assume you have a truncate function
-            val valueByteArrayTruncated = Base64.getEncoder().encodeToString(valueByteArray()) // Assuming truncation
-            return "Hit(valueString=\"$valueStringTruncated\", valueByteArray=\"$valueByteArrayTruncated\")"
+            val valueStringTruncated = valueString()
+            // TODO: add encoding for valueByteArray compatible with android and jvm
+            return "Hit(valueString=\"$valueStringTruncated\")"
         }
     }
 
