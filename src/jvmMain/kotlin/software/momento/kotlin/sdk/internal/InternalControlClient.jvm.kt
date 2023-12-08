@@ -4,6 +4,7 @@ import grpc.control_client._CreateCacheRequest
 import io.grpc.Metadata
 import software.momento.kotlin.sdk.auth.CredentialProvider
 import software.momento.kotlin.sdk.config.Configuration
+import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
 import java.io.Closeable
 
 internal actual class InternalControlClient actual constructor(
@@ -23,9 +24,8 @@ internal actual class InternalControlClient actual constructor(
         val request = _CreateCacheRequest.newBuilder()
                             .setCacheName(cacheName).build()
 
-        val response = this.stubsManager.stub.createCache(request, metadata)
-
-        
+        // todo: wire response
+        this.stubsManager.stub.createCache(request, metadata)
     }
 
     companion object {

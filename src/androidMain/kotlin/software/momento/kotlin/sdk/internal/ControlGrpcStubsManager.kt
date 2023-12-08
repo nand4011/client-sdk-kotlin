@@ -39,7 +39,7 @@ internal class ControlGrpcStubsManager(credentialProvider: CredentialProvider) :
     companion object {
         private val DEADLINE = 1.minutes
         private fun setupConnection(credentialProvider: CredentialProvider): ManagedChannel {
-            val channelBuilder = ManagedChannelBuilder.forAddress(credentialProvider.cacheEndpoint, 443)
+            val channelBuilder = ManagedChannelBuilder.forAddress(credentialProvider.controlEndpoint, 443)
             channelBuilder.useTransportSecurity()
             channelBuilder.disableRetry()
             val clientInterceptors: MutableList<ClientInterceptor> = ArrayList()
