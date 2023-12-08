@@ -11,11 +11,19 @@ repositories {
 }
 
 android {
-    namespace = "software.momento.kotlin"
+    namespace = "software.momento.kotlin.sdk"
 
     compileSdk = 34
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["TestApiKey"] = System.getenv("TEST_API_KEY") ?: "noApiKeySet"
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -35,12 +43,14 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
             }
         }
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation("software.momento.kotlin:client-protos-jvm:0.1.0-SNAPSHOT")
+                runtimeOnly("io.grpc:grpc-netty:1.57.2")
             }
         }
         val jvmTest by getting {
@@ -51,12 +61,20 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("software.momento.kotlin:client-protos-android:0.1.0-SNAPSHOT")
+                runtimeOnly("io.grpc:grpc-okhttp:1.57.2")
             }
         }
         val androidUnitTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("org.robolectric:robolectric:4.11.1")
+            }
+        }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+                implementation("androidx.test.ext:junit:1.1.5")
+                implementation("androidx.test.espresso:espresso-core:3.5.1")
             }
         }
     }

@@ -1,8 +1,10 @@
 package software.momento.kotlin.sdk.auth
 
 import software.momento.kotlin.sdk.UsingTestRunner
+import software.momento.kotlin.sdk.exceptions.InvalidArgumentException
 import java.util.*
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class CredentialProviderTest : UsingTestRunner() {
@@ -46,32 +48,32 @@ class CredentialProviderTest : UsingTestRunner() {
         val envVar = UUID.randomUUID().toString()
         try {
             CredentialProvider.fromEnvVar(envVar)
-        } catch (e: IllegalArgumentException) {
-            assertEquals("Environment variable $envVar not set", e.message)
+        } catch (e: InvalidArgumentException) {
+            assertContains(e.message!!, "not set")
         }
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = InvalidArgumentException::class)
     fun testCredentialProviderUnparsableToken() {
         CredentialProvider.fromString("this isn't a real Token")
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = InvalidArgumentException::class)
     fun testCredentialProviderNoControlEndpoint() {
         CredentialProvider.fromString(LEGACY_API_KEY_MISSING_CONTROL_TOKEN)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = InvalidArgumentException::class)
     fun testCredentialProviderNoCacheEndpoint() {
         CredentialProvider.fromString(LEGACY_API_KEY_MISSING_CACHE_TOKEN)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = InvalidArgumentException::class)
     fun testCredentialProviderV1NoApiKey() {
         CredentialProvider.fromString(V1_API_KEY_MISSING_KEY)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = InvalidArgumentException::class)
     fun testCredentialProviderV1NoEndpoint() {
         CredentialProvider.fromString(V1_API_KEY_MISSING_ENDPOINT)
     }

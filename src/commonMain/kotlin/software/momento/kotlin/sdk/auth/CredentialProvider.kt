@@ -3,6 +3,7 @@ package software.momento.kotlin.sdk.auth
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import software.momento.kotlin.sdk.exceptions.InvalidArgumentException
 
 /**
  * Contains the information required for a Momento client to connect to and authenticate with
@@ -12,8 +13,6 @@ public data class CredentialProvider(
     val controlEndpoint: String, val cacheEndpoint: String, val apiKey: String
 ) {
     public companion object {
-        //TODO: throw Momento exceptions when those are added
-
         /**
          * Creates a [CredentialProvider] from a Momento API key.
          * @param apiKey The Momento API key to use for authentication.
@@ -34,7 +33,7 @@ public data class CredentialProvider(
                     cacheEndpoint = cacheHost ?: provider.cacheEndpoint
                 )
             } catch (e: Exception) {
-                throw IllegalArgumentException("Invalid API key")
+                throw InvalidArgumentException("Invalid API key")
             }
         }
 
@@ -47,7 +46,7 @@ public data class CredentialProvider(
         public fun fromEnvVar(
             envVar: String, controlHost: String? = null, cacheHost: String? = null
         ): CredentialProvider {
-            val apiKey = System.getenv(envVar) ?: throw IllegalArgumentException("Environment variable $envVar not set")
+            val apiKey = System.getenv(envVar) ?: throw InvalidArgumentException("Environment variable $envVar not set")
             return fromString(apiKey, controlHost, cacheHost)
         }
 
@@ -55,17 +54,17 @@ public data class CredentialProvider(
         private fun processLegacyKey(apiKey: String): CredentialProvider {
             val keyParts = apiKey.split(".")
             if (keyParts.size != 3) {
-                throw IllegalArgumentException("Malformed legacy API key")
+                throw InvalidArgumentException("Malformed legacy API key")
             }
 
-            val payloadJson = keyParts[1].decodeBase64() ?: throw IllegalArgumentException("Cannot decode base64")
+            val payloadJson = keyParts[1].decodeBase64() ?: throw InvalidArgumentException("Cannot decode base64")
             val payload = json.decodeFromString<LegacyKeyPayload>(payloadJson)
 
             return CredentialProvider(payload.controlEndpoint, payload.cacheEndpoint, apiKey)
         }
 
         private fun processV1Key(apiKey: String): CredentialProvider {
-            val decodedString = apiKey.decodeBase64() ?: throw IllegalArgumentException("Cannot decode base64")
+            val decodedString = apiKey.decodeBase64() ?: throw InvalidArgumentException("Cannot decode base64")
             val v1Key = json.decodeFromString<V1Key>(decodedString)
 
             return CredentialProvider("control.${v1Key.host}", "cache.${v1Key.host}", v1Key.apiKey)
