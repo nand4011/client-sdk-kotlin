@@ -13,7 +13,7 @@ class TopicClientTest {
     fun testPublish() = runTest {
         val topicClient = TopicClient(
             credentialProvider = CredentialProvider.fromEnvVar("TEST_API_KEY"),
-            configuration = TopicConfigurations.Laptop.Latest
+            configuration = TopicConfigurations.Laptop.latest
         )
         val response = topicClient.publish("cache", "topic", "jvm!")
         if (response is TopicPublishResponse.Error) {

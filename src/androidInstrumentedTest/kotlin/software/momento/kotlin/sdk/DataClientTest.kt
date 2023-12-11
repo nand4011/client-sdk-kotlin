@@ -25,7 +25,7 @@ class DataClientTest {
 
         val dataClient = DataClient(
             credentialProvider = CredentialProvider.fromString(apiKey),
-            configuration = Configurations.Laptop.Latest
+            configuration = Configurations.Laptop.latest
         )
 
         val setResponse = dataClient.set("cache", "keyKotlin", "val", 60.seconds)

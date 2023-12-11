@@ -21,7 +21,7 @@ public object TopicConfigurations {
          *
          * @return the latest Laptop configuration
          */
-        public val Latest: TopicConfiguration = TopicConfiguration(
+        public val latest: TopicConfiguration = TopicConfiguration(
             transportStrategy = TopicTransportStrategy(
                 grpcConfiguration = GrpcConfiguration(
                     timeout = 15.seconds
@@ -43,7 +43,7 @@ public object TopicConfigurations {
          *
          * @return the latest Mobile configuration
          */
-        public val Latest: TopicConfiguration = TopicConfiguration(
+        public val latest: TopicConfiguration = TopicConfiguration(
             transportStrategy = TopicTransportStrategy(
                 grpcConfiguration = GrpcConfiguration(
                     timeout = 5.seconds
@@ -65,7 +65,7 @@ public object TopicConfigurations {
          *
          * @return the latest in-region configuration
          */
-        public val Latest: TopicConfiguration = TopicConfiguration(
+        public val latest: TopicConfiguration = TopicConfiguration(
             transportStrategy = TopicTransportStrategy(
                 grpcConfiguration = GrpcConfiguration(
                     timeout = 1100.milliseconds
@@ -87,7 +87,7 @@ public object TopicConfigurations {
              *
              * @return the latest low-latency configuration
              */
-            public val Latest: TopicConfiguration = TopicConfiguration(
+            public val latest: TopicConfiguration = TopicConfiguration(
                 transportStrategy = TopicTransportStrategy(
                     grpcConfiguration = GrpcConfiguration(
                         timeout = 500.milliseconds

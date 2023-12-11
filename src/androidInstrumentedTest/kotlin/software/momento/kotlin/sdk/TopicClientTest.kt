@@ -21,7 +21,7 @@ class TopicClientTest {
 
         val topicClient = TopicClient(
             credentialProvider = CredentialProvider.fromString(apiKey),
-            configuration = TopicConfigurations.Laptop.Latest
+            configuration = TopicConfigurations.Laptop.latest
         )
         val response = topicClient.publish("cache", "topic", "android!")
         if (response is TopicPublishResponse.Error) {
