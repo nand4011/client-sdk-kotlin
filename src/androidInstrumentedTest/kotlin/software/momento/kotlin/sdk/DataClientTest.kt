@@ -1,7 +1,6 @@
 package software.momento.kotlin.sdk
 
 import junit.framework.TestCase.fail
-import software.momento.kotlin.sdk.config.Configuration
 import software.momento.kotlin.sdk.responses.cache.GetResponse
 import software.momento.kotlin.sdk.responses.cache.SetResponse
 import kotlin.time.Duration.Companion.seconds
@@ -13,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import software.momento.kotlin.sdk.auth.CredentialProvider
+import software.momento.kotlin.sdk.config.Configurations
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -25,7 +25,7 @@ class DataClientTest {
 
         val dataClient = DataClient(
             credentialProvider = CredentialProvider.fromString(apiKey),
-            configuration = Configuration.Companion.Laptop.Latest
+            configuration = Configurations.Laptop.Latest
         )
 
         val setResponse = dataClient.set("cache", "keyKotlin", "val", 60.seconds)

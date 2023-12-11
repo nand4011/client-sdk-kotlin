@@ -3,7 +3,7 @@ package software.momento.kotlin.sdk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import software.momento.kotlin.sdk.auth.CredentialProvider
-import software.momento.kotlin.sdk.config.Configuration
+import software.momento.kotlin.sdk.config.Configurations
 import software.momento.kotlin.sdk.responses.cache.GetResponse
 import software.momento.kotlin.sdk.responses.cache.SetResponse
 import kotlin.test.fail
@@ -16,7 +16,7 @@ class DataClientTest {
 
         val dataClient = DataClient(
             credentialProvider = CredentialProvider.fromEnvVar("TEST_API_KEY"),
-            configuration = Configuration.Companion.Laptop.Latest
+            configuration = Configurations.Laptop.Latest
         )
 
         val setResponse = dataClient.set("cache", "keyKotlin", "val", 60.seconds)
