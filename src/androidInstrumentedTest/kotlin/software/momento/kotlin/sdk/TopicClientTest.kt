@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import software.momento.kotlin.sdk.auth.CredentialProvider
-import software.momento.kotlin.sdk.config.TopicConfiguration
+import software.momento.kotlin.sdk.config.TopicConfigurations
 import software.momento.kotlin.sdk.responses.topic.TopicPublishResponse
 
 @RunWith(AndroidJUnit4::class)
@@ -21,7 +21,7 @@ class TopicClientTest {
 
         val topicClient = TopicClient(
             credentialProvider = CredentialProvider.fromString(apiKey),
-            configuration = TopicConfiguration.Companion.Laptop.Latest
+            configuration = TopicConfigurations.Laptop.latest
         )
         val response = topicClient.publish("cache", "topic", "android!")
         if (response is TopicPublishResponse.Error) {
