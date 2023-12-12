@@ -6,7 +6,7 @@ import software.momento.kotlin.sdk.exceptions.SdkException
 public sealed interface CacheCreateResponse {
 
     /** A successful create cache operation. */
-    public data object Success : CacheCreateResponse
+    public object Success : CacheCreateResponse
 
     /**
      * A failed create cache operation. The response itself is an exception, so it can be directly

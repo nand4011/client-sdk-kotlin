@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     kotlin("multiplatform") version "1.9.21"
     id("com.android.library") version "8.1.4"
@@ -78,4 +80,9 @@ kotlin {
             }
         }
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions.apiVersion.set(KotlinVersion.KOTLIN_1_6)
+    compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_6)
 }

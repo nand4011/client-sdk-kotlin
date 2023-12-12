@@ -3,11 +3,12 @@ package software.momento.kotlin.sdk.internal
 import software.momento.kotlin.sdk.auth.CredentialProvider
 import software.momento.kotlin.sdk.config.Configuration
 import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
-import java.io.Closeable
+import software.momento.kotlin.sdk.responses.cache.control.CacheDeleteResponse
 
-internal expect class InternalControlClient(credentialProvider: CredentialProvider, configuration: Configuration) : Closeable {
+internal expect class InternalControlClient(credentialProvider: CredentialProvider, configuration: Configuration) :
+    InternalClient {
 
-    // todo: wire response
-    internal suspend fun createCache(cacheName: String)
+    internal suspend fun createCache(cacheName: String): CacheCreateResponse
 
+    internal suspend fun deleteCache(cacheName: String): CacheDeleteResponse
 }
