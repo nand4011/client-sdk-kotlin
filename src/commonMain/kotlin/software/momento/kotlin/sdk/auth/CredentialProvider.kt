@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import software.momento.kotlin.sdk.exceptions.InvalidArgumentException
+import software.momento.kotlin.sdk.internal.utils.decodeBase64
 
 /**
  * Contains the information required for a Momento client to connect to and authenticate with
