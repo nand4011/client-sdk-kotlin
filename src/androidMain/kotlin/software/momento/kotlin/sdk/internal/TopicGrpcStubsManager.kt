@@ -27,7 +27,7 @@ internal class TopicGrpcStubsManager(credentialProvider: CredentialProvider) : C
         futureStub = PubsubGrpcKt.PubsubCoroutineStub(channel)
     }
 
-    val stub: PubsubGrpcKt.PubsubCoroutineStub
+    val unaryStub: PubsubGrpcKt.PubsubCoroutineStub
         /**
          * Returns a stub with appropriate deadlines.
          *
@@ -41,6 +41,9 @@ internal class TopicGrpcStubsManager(credentialProvider: CredentialProvider) : C
          * [more information](https://github.com/grpc/grpc-java/issues/1495)
          */
         get() = futureStub.withDeadlineAfter(DEADLINE.inWholeSeconds, TimeUnit.SECONDS)
+
+    val streamingStub: PubsubGrpcKt.PubsubCoroutineStub
+        get() = futureStub
 
     override fun close() {
         channel.shutdown()
