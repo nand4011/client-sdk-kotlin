@@ -22,6 +22,7 @@ public object CacheServiceExceptionMapper {
      */
     public fun convert(e: Throwable, metadata: Metadata? = null): SdkException {
         return when (e) {
+            is IllegalArgumentException -> InvalidArgumentException(e.message)
             is SdkException -> e
             is StatusRuntimeException -> {
                 val statusCode = e.status.code

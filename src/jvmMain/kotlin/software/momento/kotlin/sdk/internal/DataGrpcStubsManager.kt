@@ -5,15 +5,19 @@ import io.grpc.ClientInterceptor
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import software.momento.kotlin.sdk.auth.CredentialProvider
+import software.momento.kotlin.sdk.config.GrpcConfiguration
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-internal class DataGrpcStubsManager(credentialProvider: CredentialProvider) : Closeable {
+internal class DataGrpcStubsManager(credentialProvider: CredentialProvider, configuration: GrpcConfiguration) : Closeable {
+    private val deadline: Duration
     private val channel: ManagedChannel
     private val futureStub: ScsGrpcKt.ScsCoroutineStub
 
     init {
+        deadline = configuration.timeout
         channel = setupConnection(credentialProvider)
         futureStub = ScsGrpcKt.ScsCoroutineStub(channel)
     }
@@ -30,14 +34,13 @@ internal class DataGrpcStubsManager(credentialProvider: CredentialProvider) : Cl
          *
          * [more information](https://github.com/grpc/grpc-java/issues/1495)
          */
-        get() = futureStub.withDeadlineAfter(DEADLINE.inWholeSeconds, TimeUnit.SECONDS)
+        get() = futureStub.withDeadlineAfter(deadline.inWholeSeconds, TimeUnit.SECONDS)
 
     override fun close() {
         channel.shutdown()
     }
 
     companion object {
-        private val DEADLINE = 1.minutes
         private fun setupConnection(credentialProvider: CredentialProvider): ManagedChannel {
             val channelBuilder = ManagedChannelBuilder.forAddress(credentialProvider.cacheEndpoint, 443)
             channelBuilder.useTransportSecurity()

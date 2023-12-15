@@ -1,6 +1,6 @@
 package software.momento.kotlin.sdk.internal
 
-import kotlin.concurrent.Volatile
+import kotlin.jvm.Volatile
 
 internal class UserHeaderInterceptor(private val tokenValue: String) : io.grpc.ClientInterceptor {
     private val sdkVersion = String.format("java:%s", this.javaClass.getPackage().implementationVersion)
