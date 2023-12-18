@@ -4,7 +4,12 @@ plugins {
     kotlin("multiplatform") version "1.9.21"
     id("com.android.library") version "8.1.4"
     kotlin("plugin.serialization") version "1.9.21"
+    id("maven-publish")
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
+
+group = "software.momento.kotlin"
+version = "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -31,15 +36,18 @@ android {
 
 kotlin {
     explicitApi()
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release")
+    }
     jvm()
     jvmToolchain(11)
+
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation("io.grpc:grpc-api:1.57.2")
             }
         }
@@ -87,4 +95,46 @@ kotlin {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions.apiVersion.set(KotlinVersion.KOTLIN_1_6)
     compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_6)
+}
+
+publishing {
+    publications {
+        named<MavenPublication>("kotlinMultiplatform") {
+            pom {
+                name.set("Momento Kotlin SDK")
+                description.set("Kotlin client SDK for Momento Serverless Cache")
+                url.set("https://github.com/momentohq/client-sdk-kotlin")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("momento")
+                        name.set("Momento")
+                        organization.set("Momento")
+                        email.set("eng-deveco@momentohq.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/momentohq/client-sdk-kotlin.git")
+                    developerConnection.set("scm:git:git@github.com:momentohq/client-sdk-kotlin.git")
+                    url.set("https://github.com/momentohq/client-sdk-kotlin")
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+//            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(System.getenv("SONATYPE_USERNAME"))
+            password.set(System.getenv("SONATYPE_PASSWORD"))
+        }
+    }
 }
