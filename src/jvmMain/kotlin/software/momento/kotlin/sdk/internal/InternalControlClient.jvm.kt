@@ -5,6 +5,7 @@ import grpc.control_client._DeleteCacheRequest
 import software.momento.kotlin.sdk.auth.CredentialProvider
 import software.momento.kotlin.sdk.config.Configuration
 import software.momento.kotlin.sdk.exceptions.CacheServiceExceptionMapper
+import software.momento.kotlin.sdk.exceptions.MomentoErrorCode
 import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
 import software.momento.kotlin.sdk.responses.cache.control.CacheDeleteResponse
 import software.momento.kotlin.sdk.internal.utils.ValidationUtils
@@ -37,7 +38,11 @@ internal actual class InternalControlClient actual constructor(
         }.fold(onSuccess = {
             CacheCreateResponse.Success
         }, onFailure = { e ->
-            CacheCreateResponse.Error(CacheServiceExceptionMapper.convert(e, metadata))
+            val sdkException = CacheServiceExceptionMapper.convert(e, metadata)
+            when (sdkException.errorCode) {
+                MomentoErrorCode.ALREADY_EXISTS_ERROR -> CacheCreateResponse.AlreadyExists
+                else -> CacheCreateResponse.Error(sdkException)
+            }
         })
     }
 
