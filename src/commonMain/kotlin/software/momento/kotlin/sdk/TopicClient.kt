@@ -26,7 +26,7 @@ public class TopicClient(credentialProvider: CredentialProvider, configuration: 
      * @param cacheName The name of the cache associated with the topic.
      * @param topicName The name of the topic to publish to.
      * @param value The value to publish to the topic.
-     * @return The result of the publish operation: [TopicPublishResponse.Success] or [CacheCreateResponse.Error].
+     * @return The result of the publish operation: [TopicPublishResponse.Success] or [TopicPublishResponse.Error].
      */
     public suspend fun publish(cacheName: String, topicName: String, value: String): TopicPublishResponse {
         return topicClient.publish(cacheName, topicName, value)

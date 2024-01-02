@@ -2,6 +2,7 @@ package software.momento.kotlin.sdk
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
@@ -10,8 +11,6 @@ import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
@@ -21,10 +20,9 @@ import software.momento.kotlin.sdk.exceptions.InvalidArgumentException
 import software.momento.kotlin.sdk.responses.topic.TopicMessage
 import software.momento.kotlin.sdk.responses.topic.TopicPublishResponse
 import software.momento.kotlin.sdk.responses.topic.TopicSubscribeResponse
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.time.Duration.Companion.seconds
 
 class TopicClientTest : BaseJvmTestClass() {
 
@@ -171,12 +169,19 @@ class TopicClientTest : BaseJvmTestClass() {
             }
         }
 
-        var receivedCount = 0
-        for (subscription in subscriptionResponses) {
-            subscription.takeWhile { it is TopicMessage.Text && it.value != "done" }.onEach {
-                receivedCount++
-            }.collect()
+        val receivedCount = AtomicInteger(0)
+        val subscriptionFlows = subscriptionResponses.map { subscription ->
+            flow {
+                subscription.onEach { emit(it) }
+                    .takeWhile { it is TopicMessage.Text && it.value != "done" }
+                    .onEach { receivedCount.incrementAndGet() }
+                    .collect()
+            }
         }
-        println(receivedCount)
+
+        val mergedFlow = merge(*subscriptionFlows.toTypedArray())
+        mergedFlow.collect()
+
+        assert(receivedCount.get() == messagesToPublish) { "Expected $messagesToPublish messages, got $receivedCount" }
     }
 }

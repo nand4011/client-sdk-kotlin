@@ -4,6 +4,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
@@ -20,6 +22,7 @@ import software.momento.kotlin.sdk.exceptions.InvalidArgumentException
 import software.momento.kotlin.sdk.responses.topic.TopicMessage
 import software.momento.kotlin.sdk.responses.topic.TopicPublishResponse
 import software.momento.kotlin.sdk.responses.topic.TopicSubscribeResponse
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertContentEquals
 import kotlin.test.assertNotNull
 
@@ -170,12 +173,19 @@ class TopicClientTest : BaseAndroidTestClass() {
             }
         }
 
-        var receivedCount = 0
-        for (subscription in subscriptionResponses) {
-            subscription.takeWhile { it is TopicMessage.Text && it.value != "done" }.onEach {
-                receivedCount++
-            }.collect()
+        val receivedCount = AtomicInteger(0)
+        val subscriptionFlows = subscriptionResponses.map { subscription ->
+            flow {
+                subscription.onEach { emit(it) }
+                    .takeWhile { it is TopicMessage.Text && it.value != "done" }
+                    .onEach { receivedCount.incrementAndGet() }
+                    .collect()
+            }
         }
-        println(receivedCount)
+
+        val mergedFlow = merge(*subscriptionFlows.toTypedArray())
+        mergedFlow.collect()
+
+        assert(receivedCount.get() == messagesToPublish) { "Expected $messagesToPublish messages, got $receivedCount" }
     }
 }
