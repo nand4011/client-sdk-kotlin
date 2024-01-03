@@ -25,15 +25,12 @@ public object CacheServiceExceptionMapper {
         return when (e) {
             is IllegalArgumentException -> InvalidArgumentException(e.message)
             is SdkException -> e
-            is StatusException -> {
-                val statusCode = e.status.code
-                val errorDetails = MomentoTransportErrorDetails(
-                    MomentoGrpcErrorDetails(statusCode, e.message!!, metadata)
-                )
-                convertStatusException(e, errorDetails, statusCode)
-            }
-            is StatusRuntimeException -> {
-                val statusCode = e.status.code
+            is StatusException, is StatusRuntimeException -> {
+                val statusCode = when (e) {
+                    is StatusException -> e.status.code
+                    is StatusRuntimeException -> e.status.code
+                    else -> Status.Code.UNKNOWN
+                }
                 val errorDetails = MomentoTransportErrorDetails(
                     MomentoGrpcErrorDetails(statusCode, e.message!!, metadata)
                 )
