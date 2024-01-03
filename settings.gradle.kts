@@ -6,5 +6,5 @@ pluginManagement {
     }
 
 }
-rootProject.name = "client-sdk-kotlin"
+rootProject.name = "sdk"
 

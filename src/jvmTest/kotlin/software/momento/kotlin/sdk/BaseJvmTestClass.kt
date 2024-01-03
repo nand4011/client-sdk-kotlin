@@ -16,7 +16,7 @@ open class BaseJvmTestClass {
 
         @JvmStatic
         @BeforeClass
-        fun setUp() {
+        fun createCacheClient() {
             cacheClient = CacheClient(
                 credentialProvider = CredentialProvider.fromEnvVar("TEST_API_KEY"),
                 configuration = Configurations.Laptop.latest,
@@ -28,7 +28,7 @@ open class BaseJvmTestClass {
 
         @JvmStatic
         @AfterClass
-        fun tearDown() {
+        fun destroyCacheClient() {
             runBlocking { cacheClient.deleteCache(cacheName) }
             cacheClient.close()
         }

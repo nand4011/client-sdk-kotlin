@@ -13,15 +13,18 @@ open class BaseAndroidTestClass {
     companion object {
         val cacheName: String = System.getenv("TEST_CACHE_NAME") ?: "kotlin-android-integration-${UUID.randomUUID()}"
 
+        @JvmStatic
+        protected lateinit var credentialProvider: CredentialProvider
         lateinit var cacheClient: CacheClient
 
         @JvmStatic
         @BeforeClass
-        fun setUp() {
+        fun createCacheClient() {
             val arguments = InstrumentationRegistry.getArguments()
             val apiKey = arguments.getString("TestApiKey")!!
+            credentialProvider = CredentialProvider.fromString(apiKey)
             cacheClient = CacheClient(
-                credentialProvider = CredentialProvider.fromString(apiKey),
+                credentialProvider = credentialProvider,
                 configuration = Configurations.Mobile.latest,
                 itemDefaultTtl = 60.seconds
             )
@@ -31,7 +34,7 @@ open class BaseAndroidTestClass {
 
         @JvmStatic
         @AfterClass
-        fun tearDown() {
+        fun destroyCacheClient() {
             runBlocking { cacheClient.deleteCache(cacheName) }
             cacheClient.close()
         }
