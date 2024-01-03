@@ -2,6 +2,7 @@ package software.momento.kotlin.sdk.exceptions
 
 import io.grpc.Metadata
 import io.grpc.Status
+import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
 import software.momento.kotlin.sdk.internal.MomentoGrpcErrorDetails
 import software.momento.kotlin.sdk.internal.MomentoTransportErrorDetails
@@ -24,36 +25,44 @@ public object CacheServiceExceptionMapper {
         return when (e) {
             is IllegalArgumentException -> InvalidArgumentException(e.message)
             is SdkException -> e
-            is StatusRuntimeException -> {
-                val statusCode = e.status.code
+            is StatusException, is StatusRuntimeException -> {
+                val statusCode = when (e) {
+                    is StatusException -> e.status.code
+                    is StatusRuntimeException -> e.status.code
+                    else -> Status.Code.UNKNOWN
+                }
                 val errorDetails = MomentoTransportErrorDetails(
                     MomentoGrpcErrorDetails(statusCode, e.message!!, metadata)
                 )
-                when (statusCode) {
-                    Status.Code.INVALID_ARGUMENT, Status.Code.UNIMPLEMENTED,
-                    Status.Code.OUT_OF_RANGE, Status.Code.FAILED_PRECONDITION -> BadRequestException(
-                        e, errorDetails
-                    )
-                    Status.Code.CANCELLED -> CancellationException(e, errorDetails)
-                    Status.Code.DEADLINE_EXCEEDED -> TimeoutException(e, errorDetails)
-                    Status.Code.PERMISSION_DENIED -> PermissionDeniedException(
-                        e, errorDetails
-                    )
-                    Status.Code.UNAUTHENTICATED -> AuthenticationException(e, errorDetails)
-                    Status.Code.RESOURCE_EXHAUSTED -> LimitExceededException(
-                        e, errorDetails
-                    )
-                    Status.Code.NOT_FOUND -> NotFoundException(e, errorDetails)
-                    Status.Code.ALREADY_EXISTS -> AlreadyExistsException(e, errorDetails)
-                    Status.Code.UNKNOWN -> UnknownServiceException(e, errorDetails)
-                    Status.Code.UNAVAILABLE -> ServerUnavailableException(e, errorDetails)
-                    Status.Code.ABORTED, Status.Code.INTERNAL, Status.Code.DATA_LOSS -> InternalServerException(
-                        e, errorDetails
-                    )
-                    else -> InternalServerException(e, errorDetails)
-                }
+                convertStatusException(e, errorDetails, statusCode)
             }
             else -> UnknownException(SDK_FAILED_TO_PROCESS_THE_REQUEST, e)
+        }
+    }
+
+    private fun convertStatusException(e: Throwable, errorDetails: MomentoTransportErrorDetails, statusCode: Status.Code): SdkException {
+        return when (statusCode) {
+            Status.Code.INVALID_ARGUMENT, Status.Code.UNIMPLEMENTED,
+            Status.Code.OUT_OF_RANGE, Status.Code.FAILED_PRECONDITION -> BadRequestException(
+                e, errorDetails
+            )
+            Status.Code.CANCELLED -> CancellationException(e, errorDetails)
+            Status.Code.DEADLINE_EXCEEDED -> TimeoutException(e, errorDetails)
+            Status.Code.PERMISSION_DENIED -> PermissionDeniedException(
+                e, errorDetails
+            )
+            Status.Code.UNAUTHENTICATED -> AuthenticationException(e, errorDetails)
+            Status.Code.RESOURCE_EXHAUSTED -> LimitExceededException(
+                e, errorDetails
+            )
+            Status.Code.NOT_FOUND -> NotFoundException(e, errorDetails)
+            Status.Code.ALREADY_EXISTS -> AlreadyExistsException(e, errorDetails)
+            Status.Code.UNKNOWN -> UnknownServiceException(e, errorDetails)
+            Status.Code.UNAVAILABLE -> ServerUnavailableException(e, errorDetails)
+            Status.Code.ABORTED, Status.Code.INTERNAL, Status.Code.DATA_LOSS -> InternalServerException(
+                e, errorDetails
+            )
+            else -> InternalServerException(e, errorDetails)
         }
     }
 }
