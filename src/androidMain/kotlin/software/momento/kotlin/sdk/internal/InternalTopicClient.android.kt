@@ -159,7 +159,7 @@ internal actual class InternalTopicClient actual constructor(
             this.cacheName = cacheName
             this.topic = topicName
             if (lastSequenceNumber != null) {
-                this.resumeAtTopicSequenceNumber = lastSequenceNumber as Long
+                this.resumeAtTopicSequenceNumber = lastSequenceNumber
             }
         }.build()
     }

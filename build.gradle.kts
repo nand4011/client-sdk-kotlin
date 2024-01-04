@@ -25,6 +25,7 @@ android {
         minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["TestApiKey"] = System.getenv("TEST_API_KEY") ?: "noApiKeySet"
+        testInstrumentationRunnerArguments["TestCacheName"] = System.getenv("TEST_CACHE_NAME") ?: "test-android-cache"
     }
 
     testOptions {
@@ -87,6 +88,14 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
                 implementation("androidx.test.ext:junit:1.1.5")
                 implementation("androidx.test.espresso:espresso-core:3.5.1")
+            }
+        }
+    }
+
+    targets.forEach {
+        it.compilations.all {
+            kotlinOptions {
+                freeCompilerArgs += "-Xexpect-actual-classes"
             }
         }
     }
