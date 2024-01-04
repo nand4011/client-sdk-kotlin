@@ -1,4 +1,4 @@
-# Momento Kotlin SDK
+# Development
 
 Requires the android sdk installed and the ANDROID_HOME environment variable set:
 ```bash
