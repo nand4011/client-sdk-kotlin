@@ -4,8 +4,11 @@ import kotlinx.coroutines.test.runTest
 import software.momento.kotlin.sdk.exceptions.NotFoundException
 import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
 import software.momento.kotlin.sdk.responses.cache.control.CacheDeleteResponse
+import software.momento.kotlin.sdk.responses.cache.control.CacheListResponse
 import java.util.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class CacheClientControlTest: BaseJvmTestClass() {
 
@@ -38,5 +41,21 @@ class CacheClientControlTest: BaseJvmTestClass() {
             deleteResponse = cacheClient.deleteCache(cacheName)
             assert((deleteResponse as CacheDeleteResponse.Error).cause is NotFoundException)
         }
+    }
+
+    @Test
+    fun listCacheHappyPath() = runTest  {
+        val cacheName = "kotlin-jvm-create-delete-${UUID.randomUUID()}"
+        var createResponse = cacheClient.createCache(cacheName)
+        assert(createResponse is CacheCreateResponse.Success)
+
+        var listCachesResponse = cacheClient.listCaches()
+        assert(listCachesResponse is CacheListResponse.Success)
+
+        val caches = (listCachesResponse as CacheListResponse.Success).getCaches()
+        assertTrue(caches.size > 1, "There should be exactly 2 caches in the response")
+
+        val cacheNames = caches.map { it.name() }
+        assertTrue(cacheName in cacheNames, "$cacheName should be one of the cache names")
     }
 }
