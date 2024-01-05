@@ -34,7 +34,9 @@ dependencies {
 
 ## Usage
 
-Examples coming soon.
+```kotlin
+{% include "./examples/src/main/kotlin/software/momento/example/doc_examples/ReadmeExample.kt" %}
+```
 
 ## Getting Started and Documentation
 
