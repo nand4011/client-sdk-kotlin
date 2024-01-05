@@ -11,17 +11,19 @@ import kotlin.time.Duration.Companion.seconds
 
 open class BaseAndroidTestClass {
     companion object {
-        val cacheName: String = System.getenv("TEST_CACHE_NAME") ?: "kotlin-android-integration-${UUID.randomUUID()}"
-
         @JvmStatic
         protected lateinit var credentialProvider: CredentialProvider
         lateinit var cacheClient: CacheClient
+        lateinit var cacheName: String
 
         @JvmStatic
         @BeforeClass
         fun createCacheClient() {
+            // Instrumented Android tests cannot access environment variables directly, so we
+            // pass them in as arguments to the test runner. They are defined in build.gradle.kts.
             val arguments = InstrumentationRegistry.getArguments()
             val apiKey = arguments.getString("TestApiKey")!!
+            cacheName = arguments.getString("TestCacheName")!!
             credentialProvider = CredentialProvider.fromString(apiKey)
             cacheClient = CacheClient(
                 credentialProvider = credentialProvider,
