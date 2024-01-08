@@ -1,18 +1,11 @@
 package software.momento.kotlin.sdk.responses.cache.control
-/** Information about a cache.  */
-public class CacheInfo
+/** Information about a cache.
+ *  @param name the cache name
+ * */
+public data class CacheInfo
 
 /**
  * Constructs a CacheInfo.
  *
  * @param name the name of the cache.
- */(private val name: String) {
-    /**
-     * Gets the name of the cache.
-     *
-     * @return the name.
-     */
-    public fun name(): String {
-        return name
-    }
-}
+ */(public val name: String)

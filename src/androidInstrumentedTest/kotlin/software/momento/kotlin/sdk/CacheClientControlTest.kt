@@ -55,8 +55,11 @@ class CacheClientControlTest: BaseAndroidTestClass() {
         var listCachesResponse = cacheClient.listCaches()
         assert(listCachesResponse is CacheListResponse.Success)
 
-        val caches = (listCachesResponse as CacheListResponse.Success).getCaches()
-        val cacheNames = caches.map { it.name() }
+        val caches = (listCachesResponse as CacheListResponse.Success).caches
+        val cacheNames = caches.map { it.name }
         assert(cacheNames.contains(cacheName))
+
+        var deleteResponse = cacheClient.deleteCache(cacheName)
+        assert(deleteResponse is CacheDeleteResponse.Success)
     }
 }

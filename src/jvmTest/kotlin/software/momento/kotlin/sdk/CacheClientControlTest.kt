@@ -52,10 +52,13 @@ class CacheClientControlTest: BaseJvmTestClass() {
         var listCachesResponse = cacheClient.listCaches()
         assert(listCachesResponse is CacheListResponse.Success)
 
-        val caches = (listCachesResponse as CacheListResponse.Success).getCaches()
+        val caches = (listCachesResponse as CacheListResponse.Success).caches
         assertTrue(caches.size > 1, "There should be exactly 2 caches in the response")
 
-        val cacheNames = caches.map { it.name() }
+        val cacheNames = caches.map { it.name }
         assertTrue(cacheName in cacheNames, "$cacheName should be one of the cache names")
+
+        var deleteResponse = cacheClient.deleteCache(cacheName)
+        assert(deleteResponse is CacheDeleteResponse.Success)
     }
 }
