@@ -6,10 +6,13 @@ plugins {
     kotlin("plugin.serialization") version "1.9.21"
     id("maven-publish")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    signing
 }
 
 group = "software.momento.kotlin"
+// x-release-please-start-version
 version = "0.1.0-SNAPSHOT"
+// x-release-please-end
 
 repositories {
     mavenCentral()
@@ -106,9 +109,14 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_6)
 }
 
+val javadocJar = tasks.register("javadocJar", Jar::class.java) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     publications {
-        named<MavenPublication>("kotlinMultiplatform") {
+        withType<MavenPublication> {
+            artifact(javadocJar)
             pom {
                 name.set("Momento Kotlin SDK")
                 description.set("Kotlin client SDK for Momento Serverless Cache")
@@ -140,10 +148,19 @@ publishing {
 nexusPublishing {
     repositories {
         sonatype {
-//            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
             username.set(System.getenv("SONATYPE_USERNAME"))
             password.set(System.getenv("SONATYPE_PASSWORD"))
         }
+    }
+}
+
+// Sign only if we have a key to do so
+val signingKey: String? = System.getenv("SONATYPE_SIGNING_KEY")
+if (signingKey != null) {
+    signing {
+        useInMemoryPgpKeys(signingKey, System.getenv("SONATYPE_SIGNING_KEY_PASSWORD"))
+        sign(publishing.publications)
     }
 }
