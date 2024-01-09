@@ -9,6 +9,7 @@ import software.momento.kotlin.sdk.responses.cache.GetResponse
 import software.momento.kotlin.sdk.responses.cache.SetResponse
 import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
 import software.momento.kotlin.sdk.responses.cache.control.CacheDeleteResponse
+import software.momento.kotlin.sdk.responses.cache.control.CacheListResponse
 import kotlin.time.Duration
 
 /**
@@ -49,6 +50,15 @@ public class CacheClient(
      */
     public suspend fun deleteCache(cacheName: String): CacheDeleteResponse {
         return controlClient.deleteCache(cacheName)
+    }
+
+    /**
+     * Asynchronously lists all the caches in the account.
+     *
+     * @return The result of the cache list: [CacheListResponse.Success] or [CacheListResponse.Error].
+     */
+    public suspend fun listCaches(): CacheListResponse {
+        return controlClient.listCaches()
     }
 
     /**

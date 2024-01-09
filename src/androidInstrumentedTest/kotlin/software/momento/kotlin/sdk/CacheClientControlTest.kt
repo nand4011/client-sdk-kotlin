@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import software.momento.kotlin.sdk.exceptions.NotFoundException
 import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
 import software.momento.kotlin.sdk.responses.cache.control.CacheDeleteResponse
+import software.momento.kotlin.sdk.responses.cache.control.CacheListResponse
 import java.util.*
 import kotlin.test.Test
 
@@ -42,6 +43,26 @@ class CacheClientControlTest: BaseAndroidTestClass() {
 
             deleteResponse = cacheClient.deleteCache(cacheName)
             assert((deleteResponse as CacheDeleteResponse.Error).cause is NotFoundException)
+        }
+    }
+
+    @Test
+    fun listCacheHappyPath() = runTest  {
+        val cacheName = "kotlin-android-create-delete-${UUID.randomUUID()}"
+        var createResponse = cacheClient.createCache(cacheName)
+        assert(createResponse is CacheCreateResponse.Success)
+
+        try {
+            var listCachesResponse = cacheClient.listCaches()
+            assert(listCachesResponse is CacheListResponse.Success)
+
+            val caches = (listCachesResponse as CacheListResponse.Success).caches
+            val cacheNames = caches.map { it.name }
+            assert(cacheNames.contains(cacheName))
+
+        } finally {
+            var deleteResponse = cacheClient.deleteCache(cacheName)
+            assert(deleteResponse is CacheDeleteResponse.Success)
         }
     }
 }

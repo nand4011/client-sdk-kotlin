@@ -2,6 +2,8 @@ package software.momento.kotlin.sdk.internal
 
 import grpc.control_client._CreateCacheRequest
 import grpc.control_client._DeleteCacheRequest
+import grpc.control_client._ListCachesRequest
+import io.grpc.Metadata
 import software.momento.kotlin.sdk.auth.CredentialProvider
 import software.momento.kotlin.sdk.config.Configuration
 import software.momento.kotlin.sdk.exceptions.CacheServiceExceptionMapper
@@ -9,6 +11,8 @@ import software.momento.kotlin.sdk.exceptions.MomentoErrorCode
 import software.momento.kotlin.sdk.responses.cache.control.CacheCreateResponse
 import software.momento.kotlin.sdk.responses.cache.control.CacheDeleteResponse
 import software.momento.kotlin.sdk.internal.utils.ValidationUtils
+import software.momento.kotlin.sdk.responses.cache.control.CacheInfo
+import software.momento.kotlin.sdk.responses.cache.control.CacheListResponse
 
 internal actual class InternalControlClient actual constructor(
     credentialProvider: CredentialProvider,
@@ -69,6 +73,29 @@ internal actual class InternalControlClient actual constructor(
             CacheDeleteResponse.Success
         }, onFailure = { e ->
             CacheDeleteResponse.Error(CacheServiceExceptionMapper.convert(e, metadata))
+        })
+    }
+
+    internal actual suspend fun listCaches(): CacheListResponse {
+        return runCatching {}.fold(onSuccess = {
+            sendListCaches()
+        }, onFailure = { e ->
+            CacheListResponse.Error(CacheServiceExceptionMapper.convert(e))
+        })
+    }
+
+    private suspend fun sendListCaches(): CacheListResponse {
+        val request = _ListCachesRequest.newBuilder().setNextToken("").build()
+        val metadata = Metadata()
+
+        return runCatching {
+            this.stubsManager.stub.listCaches(request, metadata)
+        }.fold(onSuccess = { listCacheResponse ->
+            CacheListResponse.Success(
+                listCacheResponse.cacheList.map { CacheInfo(it.cacheName) }
+            )
+        }, onFailure = { e ->
+            CacheListResponse.Error(CacheServiceExceptionMapper.convert(e, metadata))
         })
     }
 
